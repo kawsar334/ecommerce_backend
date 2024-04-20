@@ -26,7 +26,7 @@ app.use("/api/auth/", authRoute)
 app.use("/api/product/", productRoute); 
 app.use("/api/user/", userRoute)
 app.use("/api/cat/", categoryRoute)
-app.use("/api/stripe/", stripeRoute)   
+app.use("/api/stripe/", stripeRoute)    
 
 
 
@@ -48,3 +48,6 @@ connectDatabase()
 app.listen(PORT, ()=>{
     console.log("serever connected",PORT)
 });
+   
+
+

@@ -1,19 +1,15 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 
 
 
 const register = async (req, res, next) => {
-    
-
     try {
-        
-      
         const salt = await bcrypt.genSalt(10)
-        const userExist = await User.findOne({email:req.body.email})
+        const userExist = await User.findOne({ email: req.body.email })
         if (userExist) {
-           
             res.status(200).json({ message: "user already exist please Login ", })
         } else {
             const hasedPassword = await bcrypt.hash(req.body.password, salt);
@@ -23,7 +19,7 @@ const register = async (req, res, next) => {
             });
             const savedUser = await newUser.save();
             // pushing notification to admin 
-             await User.findOneAndUpdate({ isAdmin: true }, { $push: { notification: `${savedUser.name} has created a New account .` } });
+            await User.findOneAndUpdate({ isAdmin: true }, { $push: { notification: `${savedUser.name} has created a New account .` } });
             res.status(200).json({
                 success: true,
                 messsage: "user hasbeen created !",
@@ -39,8 +35,25 @@ const register = async (req, res, next) => {
 
 
 // LOGIN 
-const LOGIN = async (req, res, next) => {    
+const LOGIN = async (req, res, next) => {
+
     try {
+        const transporter= nodemailer.createTransport({
+            service:"gmail",
+            auth:{
+                user:"kawsarfiroz@gmai.com",
+                password:process.env.PASSWORD
+            },
+
+
+        })
+        const mailOptions = {
+            from:process.env.EMIL,
+            to:req.body.email,
+            subject:`sending email with react js and node js `
+            
+        }
+
         const user = await User.findOne({ email: req.body.email });
         if (!user) {
             return res.status(200).json({
@@ -51,18 +64,15 @@ const LOGIN = async (req, res, next) => {
             if (!pass) {
                 return res.status(200).json({
                     message: "Invalid credintials   !", success: false,
-
                 })
-            } else { 
-
-             
-                const token =await  jwt.sign({ id: user._id,isAdmin:user.isAdmin }, process.env.SECRETE, { expiresIn: "1d" });
-                const { password, ...others } = user._doc;                
+            } else {
+                const token = await jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.SECRETE, { expiresIn: "1d" });
+                const { password, ...others } = user._doc;
                 await User.findOneAndUpdate({ isAdmin: true }, { $push: { notification: `${user.name} Logged In Now..` } });
                 res.cookie("token", token, { httpOnly: true }).json({
                     message: "Login successfully",
-                    others, 
-                    success: true, 
+                    others,
+                    success: true,
                     token
                 });
             }
@@ -70,7 +80,7 @@ const LOGIN = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-} 
+}
 
 
 module.exports = { register, LOGIN }

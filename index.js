@@ -18,7 +18,7 @@ const stripeRoute = require("./routes/stripeRoute");
 const bodyParser = require("body-parser")
 
 app.use(express.json());
-app.use(cors({ origin: ['https://ecommerce-backend-three-omega.vercel.app/api/'] }));
+app.use(cors()); 
 app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(cookieParser());
   

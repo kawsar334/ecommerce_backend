@@ -6,7 +6,7 @@ const env = require("dotenv");
 env.config()
 const connectDatabase = require("./config/database");
 const cookieParser= require("cookie-parser")
-const cors = require("cors")
+// const cors = require("cors")
 app.use(express.json());
 const PORT = process.env.PORT ||4040
 const productRoute = require("./routes/productRoute");
@@ -18,7 +18,7 @@ const stripeRoute = require("./routes/stripeRoute");
 const bodyParser = require("body-parser")
 
 app.use(express.json());
-app.use(cors()); 
+// app.use(cors()); 
 app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(cookieParser());
   
@@ -33,7 +33,7 @@ app.use("/api/stripe/", stripeRoute)
 
 
 
-// middleware 
+// Error Handling Middleware 
 app.use((err, req, res, next)=>{
    const  message = err.message || "something went wrong ";
     const status = err.status || 500;
@@ -43,7 +43,7 @@ app.use((err, req, res, next)=>{
         success:false
     })
 })
-// connnection database and route 
+// Database Connection and Server Listening
 connectDatabase()
 app.listen(PORT, ()=>{
     console.log("serever connected",PORT)
